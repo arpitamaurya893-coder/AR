@@ -43,6 +43,7 @@ AFRAME.registerComponent('teacher-action', {
 
 AFRAME.registerComponent('teacher-talk',{
  init:function(){
+   const introMessage = "Teacher par click karo. Tumhare code me lesson change hota hai. The AI teacher explains the lesson using voice assistance.";
    const lessons=[
      "Welcome! Today we learn the Solar System.",
      "Earth revolves around the Sun in 365 days.",
@@ -51,19 +52,24 @@ AFRAME.registerComponent('teacher-talk',{
    let i=0;
    const board=document.querySelector('#lesson');
    const teacherEntity=document.querySelector('#ai-teacher');
-   const speakLesson=()=>{
-     board.setAttribute('value', lessons[i]);
+   const speakText=(text)=>{
+     board.setAttribute('value', text);
      if('speechSynthesis' in window){
        speechSynthesis.cancel();
-       speechSynthesis.speak(new SpeechSynthesisUtterance(lessons[i]));
+       speechSynthesis.speak(new SpeechSynthesisUtterance(text));
      }
    };
    const nextLesson=()=>{
      i=(i+1)%lessons.length;
-     speakLesson();
+     speakText(lessons[i]);
    };
    teacherEntity.addEventListener('click', nextLesson);
-   nextLesson();
+   speakText(introMessage);
+   setTimeout(() => {
+     if (i === 0) {
+       board.setAttribute('value', "Click the teacher to change the lesson.");
+     }
+   }, 5000);
    setInterval(nextLesson, 9000);
  }
 });
@@ -135,6 +141,7 @@ AFRAME.registerComponent('teacher-talk',{
 
 <a-circle position="-5 1 -6" radius=".8" color="#2196F3"></a-circle>
 <a-text value="Wheelchair Access" position="-5 2 -6" align="center" width="3"></a-text>
+<a-text value="This classroom is specially designed for differently abled students." position="0 3.5 -8" align="center" width="8" color="#222"></a-text>
 
 <a-entity id="ai-teacher" class="clickable" position="2 0 -7" rotation="0 20 0" scale="1 1 1">
   <a-sphere position="0 1.6 0" radius="0.5" color="#FFD39B"></a-sphere>
