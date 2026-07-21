@@ -8,21 +8,33 @@
 AFRAME.registerComponent('teacher-talk',{
  init:function(){
    const lessons=[
-   "Welcome! Today we learn the Solar System.",
-   "Earth revolves around the Sun in 365 days.",
-   "The Moon revolves around Earth.",
-   "Great job! Keep learning."];
+     "Welcome! Today we learn the Solar System.",
+     "Earth revolves around the Sun in 365 days.",
+     "The Moon revolves around Earth.",
+     "Great job! Keep learning."];
    let i=0;
    const board=document.querySelector('#lesson');
-   const speech=()=>{board.setAttribute('value',lessons[i]);
+   const teacherEntity=document.querySelector('#ai-teacher');
+   const speakLesson=()=>{
+     board.setAttribute('value', lessons[i]);
      if('speechSynthesis' in window){
-      speechSynthesis.cancel();
-      speechSynthesis.speak(new SpeechSynthesisUtterance(lessons[i]));
+       speechSynthesis.cancel();
+       speechSynthesis.speak(new SpeechSynthesisUtterance(lessons[i]));
      }
+   };
+   const nextLesson=()=>{
+     speakLesson();
      i=(i+1)%lessons.length;
    };
-   speech();
-   setInterval(speech,7000);
+   teacherEntity.addEventListener('click', nextLesson);
+   teacherEntity.addEventListener('mouseenter', () => {
+     teacherEntity.setAttribute('scale', '1.1 1.1 1.1');
+   });
+   teacherEntity.addEventListener('mouseleave', () => {
+     teacherEntity.setAttribute('scale', '1 1 1');
+   });
+   nextLesson();
+   setInterval(nextLesson, 9000);
  }
 });
 </script>
@@ -82,11 +94,17 @@ AFRAME.registerComponent('teacher-talk',{
 <a-circle position="-5 1 -6" radius=".8" color="#2196F3"></a-circle>
 <a-text value="Wheelchair Access" position="-5 2 -6" align="center" width="3"></a-text>
 
+<a-entity id="ai-teacher" class="clickable" position="2 0 -7" rotation="0 20 0" scale="1 1 1">
+  <a-sphere position="0 1.6 0" radius="0.5" color="#FFD39B"></a-sphere>
+  <a-box position="0 0.5 0" width="0.9" height="1.4" depth="0.4" color="#1565C0"></a-box>
+  <a-cylinder position="-0.6 0.7 0" radius="0.1" height="0.9" rotation="0 0 10" color="#FFD39B"></a-cylinder>
+  <a-cylinder position="0.6 0.7 0" radius="0.1" height="0.9" rotation="0 0 -10" color="#FFD39B"></a-cylinder>
+  <a-text value="AI Teacher" position="0 2.5 0" align="center" width="2" color="#000"></a-text>
+  <a-text value="Click to ask me" position="0 -0.5 0" align="center" width="2.5" color="#FFF"></a-text>
+</a-entity>
+
 <a-text value="AI PERSONAL VR TEACHER" position="0 4 -8" color="blue" align="center" width="10"></a-text>
 
-<a-camera position="0 1.6 4">
-<a-cursor color="yellow"></a-cursor>
-</a-camera>
 </a-scene>
 </body>
 </html>
