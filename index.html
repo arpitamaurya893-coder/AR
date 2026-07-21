@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>AI VR Teacher for Disabled Students</title>
+<script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+<script>
+AFRAME.registerComponent('teacher-talk',{
+ init:function(){
+   const lessons=[
+   "Welcome! Today we learn the Solar System.",
+   "Earth revolves around the Sun in 365 days.",
+   "The Moon revolves around Earth.",
+   "Great job! Keep learning."];
+   let i=0;
+   const board=document.querySelector('#lesson');
+   const speech=()=>{board.setAttribute('value',lessons[i]);
+     if('speechSynthesis' in window){
+      speechSynthesis.cancel();
+      speechSynthesis.speak(new SpeechSynthesisUtterance(lessons[i]));
+     }
+     i=(i+1)%lessons.length;
+   };
+   speech();
+   setInterval(speech,7000);
+ }
+});
+</script>
+</head>
+<body>
+<a-scene teacher-talk>
+<a-sky color="#87CEEB"></a-sky>
+<a-entity light="type:ambient;intensity:0.8"></a-entity>
+<a-entity light="type:directional;intensity:0.9" position="2 6 2"></a-entity>
+<a-plane rotation="-90 0 0" width="40" height="40" color="#8fd18f"></a-plane>
+
+<a-box position="0 2 -10" width="7" height="3.5" depth="0.1" color="#184d1c"></a-box>
+<a-text id="lesson" value="Loading..." color="#FFF" align="center" width="6" position="0 2 -9.94"></a-text>
+
+<a-entity position="0 0 -5">
+<a-sphere position="0 2 0" radius=".35" color="#FFD39B">
+<a-animation attribute="rotation" dur="3000" repeat="indefinite" direction="alternate" to="0 15 0"></a-animation>
+</a-sphere>
+<a-cylinder position="0 1 0" radius=".3" height="1.2" color="#1565C0"></a-cylinder>
+<a-cylinder position="-.45 1.2 0" radius=".06" height=".8" rotation="0 0 90" color="#FFD39B">
+<a-animation attribute="rotation" dur="1500" repeat="indefinite" direction="alternate" to="0 0 130"></a-animation>
+</a-cylinder>
+<a-cylinder position=".45 1.2 0" radius=".06" height=".8" rotation="0 0 90" color="#FFD39B">
+<a-animation attribute="rotation" dur="1500" repeat="indefinite" direction="alternate" to="0 0 50"></a-animation>
+</a-cylinder>
+<a-cylinder position="-.12 .2 0" radius=".07" height="1" color="#222"></a-cylinder>
+<a-cylinder position=".12 .2 0" radius=".07" height="1" color="#222"></a-cylinder>
+</a-entity>
+
+<a-box position="-3 .5 -3" width="1" height="1" depth="1" color="#795548"></a-box>
+<a-box position="0 .5 -3" width="1" height="1" depth="1" color="#795548"></a-box>
+<a-box position="3 .5 -3" width="1" height="1" depth="1" color="#795548"></a-box>
+
+<a-circle position="-5 1 -6" radius=".8" color="#2196F3"></a-circle>
+<a-text value="Wheelchair Access" position="-5 2 -6" align="center" width="3"></a-text>
+
+<a-text value="AI PERSONAL VR TEACHER" position="0 4 -8" color="blue" align="center" width="10"></a-text>
+
+<a-camera position="0 1.6 4">
+<a-cursor color="yellow"></a-cursor>
+</a-camera>
+</a-scene>
+</body>
+</html>
