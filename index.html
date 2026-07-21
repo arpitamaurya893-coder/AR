@@ -5,6 +5,42 @@
 <title>AI VR Teacher for Disabled Students</title>
 <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
 <script>
+AFRAME.registerComponent('teacher-action', {
+ init: function () {
+   const points = [
+     { x: 2, y: 0, z: -7 },
+     { x: -1.5, y: 0, z: -5.5 },
+     { x: 1, y: 0, z: -4 },
+     { x: -2.5, y: 0, z: -7 }
+   ];
+   let index = 0;
+   const moveToNext = () => {
+     index = (index + 1) % points.length;
+     const next = points[index];
+     this.el.setAttribute('animation__move', {
+       property: 'position',
+       to: `${next.x} ${next.y} ${next.z}`,
+       dur: 2200,
+       easing: 'easeInOutQuad'
+     });
+     this.el.setAttribute('animation__turn', {
+       property: 'rotation',
+       to: `0 ${index * 90} 0`,
+       dur: 1200,
+       easing: 'easeInOutQuad'
+     });
+   };
+   this.el.addEventListener('click', moveToNext);
+   this.el.addEventListener('mouseenter', () => {
+     this.el.setAttribute('scale', '1.15 1.15 1.15');
+   });
+   this.el.addEventListener('mouseleave', () => {
+     this.el.setAttribute('scale', '1 1 1');
+   });
+   setInterval(moveToNext, 15000);
+ }
+});
+
 AFRAME.registerComponent('teacher-talk',{
  init:function(){
    const lessons=[
@@ -23,16 +59,10 @@ AFRAME.registerComponent('teacher-talk',{
      }
    };
    const nextLesson=()=>{
-     speakLesson();
      i=(i+1)%lessons.length;
+     speakLesson();
    };
    teacherEntity.addEventListener('click', nextLesson);
-   teacherEntity.addEventListener('mouseenter', () => {
-     teacherEntity.setAttribute('scale', '1.1 1.1 1.1');
-   });
-   teacherEntity.addEventListener('mouseleave', () => {
-     teacherEntity.setAttribute('scale', '1 1 1');
-   });
    nextLesson();
    setInterval(nextLesson, 9000);
  }
@@ -42,29 +72,19 @@ AFRAME.registerComponent('teacher-talk',{
 <body>
 <a-scene teacher-talk>
   <!-- Camera Rig -->
-<a-entity id="rig" position="0 0 4">
-  <a-camera>
-    <a-cursor
-      fuse="false"
-      raycaster="objects: .clickable">
-    </a-cursor>
-  </a-camera>
+  <a-entity id="rig" position="0 0 4" movement-controls="speed: 0.15" wasd-controls="acceleration: 20" look-controls>
+    <a-camera position="0 1.6 0">
+      <a-cursor fuse="false" raycaster="objects: .clickable"></a-cursor>
+    </a-camera>
 
-  <!-- Left Meta Quest 3S Controller -->
-  <a-entity
-    laser-controls="hand: left"
-    raycaster="objects: .clickable"
-    line="color: #00FFFF">
+    <!-- Left Meta Quest 3S Controller -->
+    <a-entity laser-controls="hand: left" raycaster="objects: .clickable" line="color: #00FFFF"></a-entity>
+
+    <!-- Right Meta Quest 3S Controller -->
+    <a-entity laser-controls="hand: right" raycaster="objects: .clickable" line="color: #FF0000"></a-entity>
   </a-entity>
 
-  <!-- Right Meta Quest 3S Controller -->
-  <a-entity
-    laser-controls="hand: right"
-    raycaster="objects: .clickable"
-    line="color: #FF0000">
-  </a-entity>
-</a-entity>
-<a-sky color="#87CEEB"></a-sky>
+  <a-sky color="#87CEEB"></a-sky>
 <a-entity light="type:ambient;intensity:0.8"></a-entity>
 <a-entity light="type:directional;intensity:0.9" position="2 6 2"></a-entity>
 <a-plane rotation="-90 0 0" width="40" height="40" color="#8fd18f"></a-plane>
@@ -73,23 +93,45 @@ AFRAME.registerComponent('teacher-talk',{
 <a-text id="lesson" value="Loading..." color="#FFF" align="center" width="6" position="0 2 -9.94"></a-text>
 
 <a-entity position="0 0 -5">
-<a-sphere position="0 2 0" radius=".35" color="#FFD39B">
-<a-animation attribute="rotation" dur="3000" repeat="indefinite" direction="alternate" to="0 15 0"></a-animation>
-</a-sphere>
-<a-cylinder position="0 1 0" radius=".3" height="1.2" color="#1565C0"></a-cylinder>
-<a-cylinder position="-.45 1.2 0" radius=".06" height=".8" rotation="0 0 90" color="#FFD39B">
-<a-animation attribute="rotation" dur="1500" repeat="indefinite" direction="alternate" to="0 0 130"></a-animation>
-</a-cylinder>
-<a-cylinder position=".45 1.2 0" radius=".06" height=".8" rotation="0 0 90" color="#FFD39B">
-<a-animation attribute="rotation" dur="1500" repeat="indefinite" direction="alternate" to="0 0 50"></a-animation>
-</a-cylinder>
-<a-cylinder position="-.12 .2 0" radius=".07" height="1" color="#222"></a-cylinder>
-<a-cylinder position=".12 .2 0" radius=".07" height="1" color="#222"></a-cylinder>
+  <a-sphere position="0 2 0" radius=".35" color="#FFD39B">
+    <a-animation attribute="rotation" dur="3000" repeat="indefinite" direction="alternate" to="0 15 0"></a-animation>
+  </a-sphere>
+  <a-cylinder position="0 1 0" radius=".3" height="1.2" color="#1565C0"></a-cylinder>
+  <a-cylinder position="-.45 1.2 0" radius=".06" height=".8" rotation="0 0 90" color="#FFD39B">
+    <a-animation attribute="rotation" dur="1500" repeat="indefinite" direction="alternate" to="0 0 130"></a-animation>
+  </a-cylinder>
+  <a-cylinder position=".45 1.2 0" radius=".06" height=".8" rotation="0 0 90" color="#FFD39B">
+    <a-animation attribute="rotation" dur="1500" repeat="indefinite" direction="alternate" to="0 0 50"></a-animation>
+  </a-cylinder>
+  <a-cylinder position="-.12 .2 0" radius=".07" height="1" color="#222"></a-cylinder>
+  <a-cylinder position=".12 .2 0" radius=".07" height="1" color="#222"></a-cylinder>
 </a-entity>
 
 <a-box position="-3 .5 -3" width="1" height="1" depth="1" color="#795548"></a-box>
 <a-box position="0 .5 -3" width="1" height="1" depth="1" color="#795548"></a-box>
 <a-box position="3 .5 -3" width="1" height="1" depth="1" color="#795548"></a-box>
+
+<a-entity id="student-wheelchair" position="-4 0 -4" rotation="0 20 0">
+  <a-box width="0.6" height="0.4" depth="0.6" color="#4CAF50" position="0 0.2 0"></a-box>
+  <a-cylinder position="0.3 0.05 0" radius="0.2" height="0.1" rotation="0 0 90" color="#000"></a-cylinder>
+  <a-cylinder position="-0.3 0.05 0" radius="0.2" height="0.1" rotation="0 0 90" color="#000"></a-cylinder>
+  <a-sphere position="0 0.7 0" radius="0.25" color="#FFD39B"></a-sphere>
+  <a-text value="Student A" position="0 1.2 0" width="1.5" align="center"></a-text>
+</a-entity>
+
+<a-entity id="student-guide" position="-2 0 -3" rotation="0 10 0">
+  <a-sphere position="0 1.4 0" radius="0.25" color="#FFD39B"></a-sphere>
+  <a-box position="0 0.6 0" width="0.6" height="1" depth="0.35" color="#3F51B5"></a-box>
+  <a-cylinder position="-0.3 0.3 0" radius="0.08" height="0.8" rotation="0 0 10" color="#795548"></a-cylinder>
+  <a-text value="Guide" position="0 1.8 0" width="1.2" align="center"></a-text>
+</a-entity>
+
+<a-entity id="student-seeing" position="2 0 -4" rotation="0 -15 0">
+  <a-sphere position="0 1.4 0" radius="0.25" color="#FFD39B"></a-sphere>
+  <a-box position="0 0.6 0" width="0.6" height="1" depth="0.35" color="#FF9800"></a-box>
+  <a-cylinder position="0 0.3 -0.25" radius="0.08" height="0.8" rotation="90 0 0" color="#000"></a-cylinder>
+  <a-text value="Learner" position="0 1.8 0" width="1.2" align="center"></a-text>
+</a-entity>
 
 <a-circle position="-5 1 -6" radius=".8" color="#2196F3"></a-circle>
 <a-text value="Wheelchair Access" position="-5 2 -6" align="center" width="3"></a-text>
